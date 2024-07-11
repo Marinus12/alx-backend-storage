@@ -1,31 +1,19 @@
+-- Stored Procedure to compute and store average score for a user
 DELIMITER //
 
-CREATE PROCEDURE add_correction(
-    IN p_user_id INT,
-    IN p_project_id INT,
-    IN p_score INT
-)
+CREATE PROCEDURE ComputeAverageScoreForUser(IN user_id INT)
 BEGIN
-    DECLARE total_score INT;
-    DECLARE correction_count INT;
-    
-    -- Insert the new correction
-    INSERT INTO corrections (user_id, project_id, score) 
-    VALUES (p_user_id, p_project_id, p_score);
-    
-    -- Calculate the new average score for the user
-    SELECT SUM(score) INTO total_score
+    DECLARE avg_score FLOAT DEFAULT 0;
+
+    -- Calculate the average score for the user's scores
+    SELECT AVG(score) INTO avg_score
     FROM corrections
-    WHERE user_id = p_user_id;
-    
-    SELECT COUNT(*) INTO correction_count
-    FROM corrections
-    WHERE user_id = p_user_id;
-    
-    -- Update the user's average score
+    WHERE user_id = user_id;
+
+    -- Update the user's average score in the users table
     UPDATE users
-    SET average_score = total_score / correction_count
-    WHERE id = p_user_id;
+    SET average_score = avg_score
+    WHERE id = user_id;
 END //
 
 DELIMITER ;
